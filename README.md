@@ -47,8 +47,12 @@ cp .env.example .env
 ルートディレクトリでmain.pyを実行する
 
 ```bash
-uv run python main.py "<任意のプロンプト>
-# LLMの回答が表示される
+# 入力プロンプトを加工せず送信
+uv run python main.py send "<任意のプロンプト>"
+
+# 入力文字列について尋ねる
+uv run python main.py ask "<任意のプロンプト>"
+# "<任意のプロンプト>とはなんですか？"という文字列が送信される
 ```
 
 -----------------

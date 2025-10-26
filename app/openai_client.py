@@ -8,6 +8,7 @@ from dotenv import load_dotenv
 import os
 # from openai import OpenAI
 from langfuse.openai import OpenAI  # Langfuseのトラッキング付き
+from langfuse import observe
 
 # langfuse, OpenAIの環境変数の読み込み
 load_dotenv()
@@ -29,7 +30,8 @@ def _get_config():
     return api_key, model, timeout
 
 
-def send_prompt(prompt: str, model: str | None = None, timeout: int | None = None) -> str:
+# @observe  # Langfuseのトラッキングを有効化
+def send_prompt(prompt: str, model: str | None = None) -> str:
     """Send the prompt to OpenAI and return the response text.
 
     Raises ConfigError if API key is missing.
@@ -37,16 +39,47 @@ def send_prompt(prompt: str, model: str | None = None, timeout: int | None = Non
     """
     api_key, default_model, default_timeout = _get_config()
     model = model or default_model
-    req_timeout = timeout or default_timeout or 10
 
     try:
         client = OpenAI()
 
-        response = client.responses.create(
+        response = client.chat.completions.create(
             model=model,
-            input=prompt
+            messages=[
+                {"role": "system", "content": "Speak in Japanese."},
+                {"role": "user", "content": prompt}
+            ]
         )
-        content = getattr(response, "output_text", None)
+        content = response.choices[0].message.content
+
+        return (content or "").strip()
+    except Exception as e:
+        raise RuntimeError(f"通信エラー: {e}")
+
+
+# @observe  # Langfuseのトラッキングを有効化
+def ask_prompt(prompt: str, model: str | None = None) -> str:
+    """Ask for the prompt to OpenAI and return the response text.
+
+    Raises ConfigError if API key is missing.
+    Raises RuntimeError on network / API errors.
+    """
+    api_key, default_model, default_timeout = _get_config()
+    model = model or default_model
+
+    try:
+        client = OpenAI()
+
+        user_prompt = "What is {name}?".format(name=prompt)
+
+        response = client.chat.completions.create(
+            model=model,
+            messages=[
+                {"role": "system", "content": "Speak in Japanese."},
+                {"role": "user", "content": user_prompt}
+            ]
+        )
+        content = response.choices[0].message.content
 
         return (content or "").strip()
     except Exception as e:
