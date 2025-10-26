@@ -6,11 +6,11 @@ Provides:
 """
 from dotenv import load_dotenv
 import os
-from openai import OpenAI
-# from langfuse.openai import OpenAI
+# from openai import OpenAI
+from langfuse.openai import OpenAI  # Langfuseのトラッキング付き
 
+# langfuse, OpenAIの環境変数の読み込み
 load_dotenv()
-
 
 class ConfigError(Exception):
     pass

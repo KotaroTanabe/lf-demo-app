@@ -26,18 +26,26 @@ docker compose up
 https://localhost:3000/ からアクセス。
 Sign Upして適当なアカウントを作成
 
+## Langfuse キー取得
+organization, projectを適当に作成する。
+Settingsを開き、public key, secret key, urlを取得する。
+
 ## LLMアプリ
 langfuseによる監視を確認するためのサンプルLLMアプリ。
 入力されたプロンプトをLLMに渡し、得られた回答を表示する。
 
-### セットアップ
+### 環境変数セットアップ
+
 ```bash
 cp .env.example .env
 ```
-.envのAPIキーを入力
+
+.envにOpenAI, Langfuseの設定（APIキーなど）を入力
 
 ### 実行
-ルートディレクトリで以下のように実行
+
+ルートディレクトリでmain.pyを実行する
+
 ```bash
 uv run python main.py "<任意のプロンプト>
 # LLMの回答が表示される
